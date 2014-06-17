@@ -19,25 +19,14 @@ module Spree
     has_and_belongs_to_many :option_values, join_table: :spree_option_values_variants
     has_many :images, -> { order(:position) }, as: :viewable, dependent: :destroy, class_name: "Spree::Image"
 
-    has_one :default_price,
-      -> { where currency: Spree::Config[:currency] },
-      class_name: 'Spree::Price',
-      dependent: :destroy
-
-    delegate_belongs_to :default_price, :display_price, :display_amount, :price, :price=, :currency
-
     has_many :prices,
       class_name: 'Spree::Price',
       dependent: :destroy,
       inverse_of: :variant
 
-    validate :check_price
-    validates :price, numericality: { greater_than_or_equal_to: 0 }
-
     validates :cost_price, numericality: { greater_than_or_equal_to: 0, allow_nil: true }
 
     before_validation :set_cost_currency
-    after_save :save_default_price
     after_create :create_stock_items
     after_create :set_position
 
@@ -93,10 +82,6 @@ module Spree
       Spree::Product.unscoped { super }
     end
 
-    def default_price
-      Spree::Price.unscoped { super }
-    end
-
     def options=(options = {})
       options.each do |option|
         set_option_value(option[:name], option[:value])
@@ -135,18 +120,6 @@ module Spree
 
     def option_value(opt_name)
       self.option_values.detect { |o| o.option_type.name == opt_name }.try(:presentation)
-    end
-
-    def has_default_price?
-      !self.default_price.nil?
-    end
-
-    def price_in(currency)
-      prices.select{ |price| price.currency == currency }.first || Spree::Price.new(variant_id: self.id, currency: currency)
-    end
-
-    def amount_in(currency)
-      price_in(currency).try(:amount)
     end
 
     def name_and_sku
@@ -188,22 +161,6 @@ module Spree
         price.gsub!(separator, '.') unless separator == '.' # then replace the locale-specific decimal separator with the standard separator if necessary
 
         price.to_d
-      end
-
-      # Ensures a new variant takes the product master price when price is not supplied
-      def check_price
-        if price.nil? && Spree::Config[:require_master_price]
-          raise 'No master variant found to infer price' unless (product && product.master)
-          raise 'Must supply price for variant or master.price for product.' if self == product.master
-          self.price = product.master.price
-        end
-        if currency.nil?
-          self.currency = Spree::Config[:currency]
-        end
-      end
-
-      def save_default_price
-        default_price.save if default_price && (default_price.changed? || default_price.new_record?)
       end
 
       def set_cost_currency

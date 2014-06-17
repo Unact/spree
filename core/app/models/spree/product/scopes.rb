@@ -38,26 +38,6 @@ module Spree
 
     add_simple_scopes simple_scopes
 
-    add_search_scope :ascend_by_master_price do
-      joins(:master => :default_price).order("#{price_table_name}.amount ASC")
-    end
-
-    add_search_scope :descend_by_master_price do
-      joins(:master => :default_price).order("#{price_table_name}.amount DESC")
-    end
-
-    add_search_scope :price_between do |low, high|
-      joins(:master => :default_price).where(Price.table_name => { :amount => low..high })
-    end
-
-    add_search_scope :master_price_lte do |price|
-      joins(:master => :default_price).where("#{price_table_name}.amount <= ?", price)
-    end
-
-    add_search_scope :master_price_gte do |price|
-      joins(:master => :default_price).where("#{price_table_name}.amount >= ?", price)
-    end
-
     # This scope selects products in taxon AND all its descendants
     # If you need products only within one taxon use
     #

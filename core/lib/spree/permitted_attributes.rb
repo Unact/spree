@@ -52,7 +52,7 @@ module Spree
 
     @@product_attributes = [
       :name, :description, :available_on, :permalink, :meta_description,
-      :meta_keywords, :price, :sku, :deleted_at, :prototype_id,
+      :meta_keywords, :sku, :deleted_at, :prototype_id,
       :option_values_hash, :weight, :height, :width, :depth,
       :shipping_category_id, :tax_category_id,
       :taxon_ids, :option_type_ids, :cost_currency, :cost_price]
@@ -93,7 +93,7 @@ module Spree
     @@variant_attributes = [
       :name, :presentation, :cost_price, :lock_version,
       :position, :option_value_ids,
-      :product_id, :product, :option_values_attributes, :price,
+      :product_id, :product, :option_values_attributes,
       :weight, :height, :width, :depth, :sku, :cost_currency, options: [ :name, :value ]]
   end
 end

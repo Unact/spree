@@ -30,7 +30,6 @@ module Spree
       #   product: {
       #     ...
       #     variants: {
-      #       price: 19.99,
       #       sku: "hey_you",
       #       options: [
       #         { name: "size", value: "small" },

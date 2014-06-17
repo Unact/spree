@@ -57,7 +57,7 @@ module Spree
 
     has_many :stock_items, through: :variants_including_master
 
-    delegate_belongs_to :master, :sku, :price, :currency, :display_amount, :display_price, :weight, :height, :width, :depth, :is_master, :has_default_price?, :cost_currency, :price_in, :amount_in
+    delegate_belongs_to :master, :sku, :price, :currency, :display_amount, :display_price, :weight, :height, :width, :depth, :is_master, :cost_currency, :price_in, :amount_in
 
     delegate_belongs_to :master, :cost_price
 
@@ -74,7 +74,6 @@ module Spree
     has_many :variant_images, -> { order(:position) }, source: :images, through: :variants_including_master
 
     validates :name, presence: true
-    validates :price, presence: true, if: proc { Spree::Config[:require_master_price] }
     validates :shipping_category_id, presence: true
     validates :slug, length: { minimum: 3 }
 
@@ -249,7 +248,7 @@ module Spree
       # there's a weird quirk with the delegate stuff that does not automatically save the delegate object
       # when saving so we force a save using a hook.
       def save_master
-        master.save if master && (master.changed? || master.new_record? || (master.default_price && (master.default_price.changed? || master.default_price.new_record?)))
+        master.save if master && (master.changed? || master.new_record?)
       end
 
       def ensure_master

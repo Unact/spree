@@ -129,7 +129,7 @@ module Spree
       end
 
       def product_scope
-        variants_associations = [{ option_values: :option_type }, :default_price, :prices, :images]
+        variants_associations = [{ option_values: :option_type }, :prices, :images]
         if current_api_user.has_spree_role?("admin")
           scope = Product.with_deleted.accessible_by(current_ability, :read)
             .includes(:properties, :option_types, variants: variants_associations, master: variants_associations)

@@ -28,13 +28,7 @@ module Spree
           :with_property_value => [:property, :value],
           :with_option => [:option],
           :with_option_value => [:option, :value],
-        },
-        # product selection based upon master price
-        :price => {
-          :price_between => [:low, :high],
-          :master_price_lte => [:amount],
-          :master_price_gte => [:amount],
-        },
+        }
       }
     end
 

@@ -47,43 +47,9 @@ module Spree
     # happen until Taxon class is loaded. Ensure that Taxon class is loaded before
     # you try something like Product.price_range_any
     module ProductFilters
-      # Example: filtering by price
-      #   The named scope just maps incoming labels onto their conditions, and builds the conjunction
-      #   'price' is in the base scope's context (ie, "select foo from products where ...") so
-      #     we can access the field right away
-      #   The filter identifies which scope to use, then sets the conditions for each price range
-      #
-      # If user checks off three different price ranges then the argument passed to
-      # below scope would be something like ["$10 - $15", "$15 - $18", "$18 - $20"]
-      #
-      Spree::Product.add_search_scope :price_range_any do |*opts|
-        conds = opts.map {|o| Spree::Core::ProductFilters.price_filter[:conds][o]}.reject { |c| c.nil? }
-        scope = conds.shift
-        conds.each do |new_scope|
-          scope = scope.or(new_scope)
-        end
-        Spree::Product.joins(master: :default_price).where(scope)
-      end
-
       def ProductFilters.format_price(amount)
         Spree::Money.new(amount)
       end
-
-      def ProductFilters.price_filter
-        v = Spree::Price.arel_table
-        conds = [ [ Spree.t(:under_price, price: format_price(10))     , v[:amount].lteq(10)],
-                  [ "#{format_price(10)} - #{format_price(15)}"        , v[:amount].in(10..15)],
-                  [ "#{format_price(15)} - #{format_price(18)}"        , v[:amount].in(15..18)],
-                  [ "#{format_price(18)} - #{format_price(20)}"        , v[:amount].in(18..20)],
-                  [ Spree.t(:or_over_price, price: format_price(20)) , v[:amount].gteq(20)]]
-        {
-          name:   Spree.t(:price_range),
-          scope:  :price_range_any,
-          conds:  Hash[*conds.flatten],
-          labels: conds.map { |k,v| [k, k] }
-        }
-      end
-
 
       # Example: filtering by possible brands
       #

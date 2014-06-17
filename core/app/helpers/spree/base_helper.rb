@@ -133,10 +133,6 @@ module Spree
        Gem.available?(name)
     end
 
-    def display_price(product_or_variant)
-      product_or_variant.price_in(current_currency).display_price.to_html
-    end
-
     def pretty_time(time)
       [I18n.l(time.to_date, format: :long),
         time.strftime("%l:%M %p")].join(" ")
