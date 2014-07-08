@@ -11,6 +11,7 @@ module Spree
     def index
       @searcher = build_searcher(params)
       @products = @searcher.retrieve_products
+      logger.info "!!!!!!!!!!!!!!!!!!!!!!!!! #{@products.inspect}"
       @taxonomies = Spree::Taxonomy.includes(root: :children)
     end
 

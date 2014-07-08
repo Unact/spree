@@ -38,6 +38,17 @@ module Spree
     def self.active(currency = nil)
       joins(:prices).where(deleted_at: nil).where('spree_prices.currency' => currency || Spree::Config[:currency]).where('spree_prices.amount IS NOT NULL')
     end
+    
+    def price(address = spree_current_user.ship_address)
+      prices.joins({market_pricelist: :pricelist_addresses}).
+        where({market_pricelist_addresses: { spree_address_id: address}}).
+        first
+    end
+    
+    def display_price(address = spree_current_user.ship_address)
+      current_price = price(address)
+      Spree::Money.new(current_price.amount, current_price.currency) if current_price
+    end
 
     def tax_category
       if self[:tax_category_id].nil?

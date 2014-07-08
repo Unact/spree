@@ -168,7 +168,7 @@ module Spree
 
     # Can't use add_search_scope for this as it needs a default argument
     def self.available(available_on = nil, currency = nil)
-      joins(:master => :prices).where("#{Product.quoted_table_name}.available_on <= ?", available_on || Time.now)
+      joins(:master).where("#{Product.quoted_table_name}.available_on <= ?", available_on || Time.now)
     end
     search_scopes << :available
 
