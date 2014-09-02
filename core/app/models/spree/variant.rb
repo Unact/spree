@@ -36,16 +36,17 @@ module Spree
     scope :deleted, lambda { where.not(deleted_at: nil) }
 
     def self.active(currency = nil)
-      joins(:prices).where(deleted_at: nil).where('spree_prices.currency' => currency || Spree::Config[:currency]).where('spree_prices.amount IS NOT NULL')
+      joins(:prices).where(deleted_at: nil).
+      where('spree_prices.currency' => currency || Spree::Config[:currency]).
+      where('spree_prices.amount IS NOT NULL')
     end
     
-    def price(address = spree_current_user.ship_address)
+    def price(address)
       prices.joins({market_pricelist: :pricelist_addresses}).
-        where({market_pricelist_addresses: { spree_address_id: address}}).
-        first
+      where({market_pricelist_addresses: { spree_address_id: address}})[0]
     end
     
-    def display_price(address = spree_current_user.ship_address)
+    def display_price(address)
       current_price = price(address)
       Spree::Money.new(current_price.amount, current_price.currency) if current_price
     end
