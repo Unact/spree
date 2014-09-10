@@ -36,9 +36,9 @@ module Spree
 
     def copy_price
       if variant
-        self.price = variant.price if price.nil?
+        self.price = variant.price(self.order.ship_address_id) if price.nil?
         self.cost_price = variant.cost_price if cost_price.nil?
-        self.currency = variant.currency if currency.nil?
+        self.currency = self.order.currency if currency.nil? && self.order
       end
     end
 
@@ -123,7 +123,7 @@ module Spree
 
       def ensure_proper_currency
         unless currency == order.currency
-          errors.add(:currency, t(:must_match_order_currency))
+          errors.add(:currency, Spree.t(:must_match_order_currency))
         end
       end
   end

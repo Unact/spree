@@ -67,7 +67,7 @@ module Spree
             line_item.currency = currency
             line_item.price    = variant.price_in(currency).amount
           else
-            line_item.price    = variant.price
+            line_item.price    = variant.price(line_item.order.ship_address_id).amount
           end
         end
 
